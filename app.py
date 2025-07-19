@@ -85,21 +85,4 @@ FTK®,
         # Show formatted message
         st.markdown(f'<div class="custom-font">{message.replace(chr(10), "<br>")}</div>', unsafe_allow_html=True)
 
-        # Copy to clipboard button
-        safe_message = message.replace("`", "'")  # prevent JS breaking
-        st.markdown(f"""
-            <button onclick="navigator.clipboard.writeText(`{safe_message}`)"
-            style="
-                margin-top:10px;
-                background-color:#4CAF50;
-                color:white;
-                padding:10px 15px;
-                border:none;
-                border-radius:4px;
-                cursor:pointer;">
-            📋 Copy to Clipboard
-            </button>
-        """, unsafe_allow_html=True)
-
-        st.success("✅ Email script generated! You can now copy it.")
 
