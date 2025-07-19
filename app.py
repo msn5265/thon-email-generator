@@ -1,6 +1,36 @@
 import streamlit as st
+import base64
+from pathlib import Path
 
 st.set_page_config(page_title="THON Donation Email Generator")
+
+# === Load and inject custom font ===
+def load_custom_font():
+    font_path = Path("Gill Sans MT.ttf")  # Font must be in project directory
+    with open(font_path, "rb") as f:
+        font_data = f.read()
+    encoded_font = base64.b64encode(font_data).decode("utf-8")
+    st.markdown(f"""
+        <style>
+        @font-face {{
+            font-family: 'GillSansMT';
+            src: url(data:font/ttf;base64,{encoded_font}) format('truetype');
+        }}
+        .custom-font {{
+            font-family: 'GillSansMT', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+        }}
+        </style>
+    """, unsafe_allow_html=True)
+
+# Load the font on page load
+load_custom_font()
 
 st.title("THON Donation Script Generator")
 
@@ -31,7 +61,7 @@ If you are interested in supporting THON or have any other questions, please con
 
 FTK®, 
 """
-    else:  # option == "email"
+    else:
         message = f"""Dear {company},
 
 My name is {name} and I am a captain for Penn State Dance Marathon, more commonly known as THON™. THON is the world’s largest student-run philanthropy, committed to enhancing the lives of children and families impacted by childhood cancer. Our mission is to provide emotional and financial support, spread awareness, and ensure funding for critical research, all For The Kids®.  
@@ -47,7 +77,23 @@ If you are interested in supporting THON or have any other questions, please con
 FTK®, 
 """
 
-    st.text_area("📧 Generated Email Script", value=message, height=400)
-    st.code(message, language="text")
+    # Display formatted text with custom font
+    st.markdown(f'<div class="custom-font">{message.replace(chr(10), "<br>")}</div>', unsafe_allow_html=True)
+
+    # Add copy-to-clipboard button
+    st.markdown(f"""
+        <button onclick="navigator.clipboard.writeText(`{message}`)"
+        style="
+            margin-top:10px;
+            background-color:#4CAF50;
+            color:white;
+            padding:10px 15px;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;">
+        📋 Copy to Clipboard
+        </button>
+    """, unsafe_allow_html=True)
+
     st.success("✅ Email script generated! You can now copy it.")
 
