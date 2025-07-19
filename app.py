@@ -6,7 +6,7 @@ st.set_page_config(page_title="THON Donation Email Generator")
 
 # === Load and inject custom font ===
 def load_custom_font():
-    font_path = Path("Gill Sans MT.ttf")  # Font must be in project directory
+    font_path = Path("Gill Sans MT.ttf")  # Font file must be in project directory
     with open(font_path, "rb") as f:
         font_data = f.read()
     encoded_font = base64.b64encode(font_data).decode("utf-8")
@@ -29,7 +29,7 @@ def load_custom_font():
         </style>
     """, unsafe_allow_html=True)
 
-# Load the font on page load
+# Load the font
 load_custom_font()
 
 st.title("THON Donation Script Generator")
@@ -43,11 +43,16 @@ item = st.text_input("Item Name")
 item_use = st.text_input("How the Item Will Be Used (e.g., raffle prize)")
 option = st.selectbox("Message Type", ["online", "email"])
 
-# Generate on button click
+# Generate script
 if st.button("Generate Script"):
 
-    if option == "online":
-        message = f"""Dear {company},
+    # Basic validation
+    if not name or not email or not phone or not company or not item or not item_use:
+        st.error("❗ Please fill in all fields before generating the script.")
+    else:
+        # Compose the message
+        if option == "online":
+            message = f"""Dear {company},
 
 My name is {name} and I am a captain for Penn State Dance Marathon, more commonly known as THON™. THON is the world’s largest student-run philanthropy, committed to enhancing the lives of children and families impacted by childhood cancer. Our mission is to provide emotional and financial support, spread awareness, and ensure funding for critical research, all For The Kids®.  
 
@@ -61,8 +66,8 @@ If you are interested in supporting THON or have any other questions, please con
 
 FTK®, 
 """
-    else:
-        message = f"""Dear {company},
+        else:
+            message = f"""Dear {company},
 
 My name is {name} and I am a captain for Penn State Dance Marathon, more commonly known as THON™. THON is the world’s largest student-run philanthropy, committed to enhancing the lives of children and families impacted by childhood cancer. Our mission is to provide emotional and financial support, spread awareness, and ensure funding for critical research, all For The Kids®.  
 
@@ -77,23 +82,24 @@ If you are interested in supporting THON or have any other questions, please con
 FTK®, 
 """
 
-    # Display formatted text with custom font
-    st.markdown(f'<div class="custom-font">{message.replace(chr(10), "<br>")}</div>', unsafe_allow_html=True)
+        # Show formatted message
+        st.markdown(f'<div class="custom-font">{message.replace(chr(10), "<br>")}</div>', unsafe_allow_html=True)
 
-    # Add copy-to-clipboard button
-    st.markdown(f"""
-        <button onclick="navigator.clipboard.writeText(`{message}`)"
-        style="
-            margin-top:10px;
-            background-color:#4CAF50;
-            color:white;
-            padding:10px 15px;
-            border:none;
-            border-radius:4px;
-            cursor:pointer;">
-        📋 Copy to Clipboard
-        </button>
-    """, unsafe_allow_html=True)
+        # Copy to clipboard button
+        safe_message = message.replace("`", "'")  # prevent JS breaking
+        st.markdown(f"""
+            <button onclick="navigator.clipboard.writeText(`{safe_message}`)"
+            style="
+                margin-top:10px;
+                background-color:#4CAF50;
+                color:white;
+                padding:10px 15px;
+                border:none;
+                border-radius:4px;
+                cursor:pointer;">
+            📋 Copy to Clipboard
+            </button>
+        """, unsafe_allow_html=True)
 
-    st.success("✅ Email script generated! You can now copy it.")
+        st.success("✅ Email script generated! You can now copy it.")
 
